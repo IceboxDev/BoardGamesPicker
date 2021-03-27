@@ -1,84 +1,38 @@
-L = """7 Wonders
-7 Wonders Duels
-Activity
-Aeon's End
-Battleships
-Black Dog
-Bluff
-Bohnanza
-Catan
-Chess
-Clue
-Codenames
-Codenames Duet
-Codenames Pictures
-Connect 4
-Exploding Kittens
-Fox in the Forest
-Guess Who?
-Jaipur
-Klattschen
-Ligretto
-Ligretto Dice
-Ligretto Twist
-Lost Cities
-Mensch ärgere Dich nicht
-Mister X - Hunt through London
-Monopoly
-Munchkin
-Old Maid
-Pandemic
-Phase 10
-Pictures
-Poker
-Pucket
-Risk
-Rommé
-Schach
-Scotland Yard
-Scrabble
-Skip-Bo
-The Crew
-The Mind
-UNO
-Villainous
-Werewolf
-Who Wants to Be a Millionaire
-Wingspan
-Wizard"""
+from collections import defaultdict
+from random import shuffle
+from random import choice
 
-L = L.split("\n")
+games = "".split("\n")
+shuffle(games)
+
 comparisons = []
-wins = {i : 0 for i in L}
-plays = {i : 0 for i in L}
+wins = defaultdict(int)
+plays = defaultdict(int)
 
-import random
-random.shuffle(L)
-
-for a in L:
-    b = random.choice([q for q in L if q != a and (a,q) not in [(x1,x2) for x1,x2,x3 in comparisons]])
-    ans = input(a + " / " + b + ": ")
+for first in games:
+    second = choice([q for q in games if q != first and (first, q) not in [(x1, x2) for x1, x2, x3 in comparisons]])
+    ans = input(first + " / " + second + ": ")
     if ans == "1":
-        wins[a]+=1
-        comparisons.append((a,b,a))
-        comparisons.append((b,a,a))
+        wins[first]+=1
+        comparisons.append((first, second, first))
+        comparisons.append((second, first, first))
     else:
-        wins[b]+=1
-        comparisons.append((a,b,b))
-        comparisons.append((b,a,b))
+        wins[second]+=1
+        comparisons.append((first, second, second))
+        comparisons.append((second, first, second))
 
-    plays[a] += 1
-    plays[b] += 1
+    plays[first] += 1
+    plays[second] += 1
 
-L.sort(key=lambda x: wins[x]/plays[x], reverse=True)
+games.sort(key=lambda x: wins[x] / plays[x], reverse=True)
 while True:
     retry=False
-    for i in range(len(L)-1):
-        if wins[L[i]]/plays[L[i]] > wins[L[i+1]]/plays[L[i+1]] or \
-                (L[i], L[i+1], L[i]) in comparisons:
+    for i in range(len(games) - 1):
+        if wins[games[i]]/plays[games[i]] > wins[games[i + 1]]/plays[games[i + 1]] or \
+                (games[i], games[i + 1], games[i]) in comparisons:
             continue
-        elif (L[i], L[i+1], L[i+1]) in comparisons:
-            L[i], L[i+1] = L[i+1], L[i]
+        elif (games[i], games[i + 1], games[i + 1]) in comparisons:
+            games[i], games[i + 1] = games[i + 1], games[i]
             retry=True
             break
 
@@ -90,22 +44,18 @@ while True:
     if retry:
         continue
 
-    ans = input(L[i] + " / " + L[i+1] + ": ")
+    ans = input(games[i] + " / " + games[i + 1] + ": ")
     if ans == "1":
-        wins[L[i]]+=1
-        comparisons.append((L[i],L[i+1],L[i]))
-        comparisons.append((L[i+1],L[i],L[i]))
+        wins[games[i]]+=1
+        comparisons.append((games[i], games[i + 1], games[i]))
+        comparisons.append((games[i + 1], games[i], games[i]))
     else:
-        wins[L[i+1]]+=1
-        comparisons.append((L[i],L[i+1],L[i+1]))
-        comparisons.append((L[i+1],L[i],L[i+1]))
+        wins[games[i + 1]]+=1
+        comparisons.append((games[i], games[i + 1], games[i + 1]))
+        comparisons.append((games[i + 1], games[i], games[i + 1]))
 
-    plays[L[i]] += 1
-    plays[L[i+1]] += 1
-    L.sort(key=lambda x: wins[x]/plays[x], reverse=True)
+    plays[games[i]] += 1
+    plays[games[i + 1]] += 1
+    games.sort(key=lambda x: wins[x] / plays[x], reverse=True)
 
-print(L)
-
-    
-    
-    
+print(games[0])
